@@ -1,0 +1,168 @@
+﻿@page "/carrinhopage"
+@page "/carrinhopage/{idcliente:int}/{from}"
+@page "/carrinhopage/{idcliente:int}/{idfeira:int}/{from}"
+@page "/carrinhopage/{idcliente:int}/{idfeira:int}/{idstand:int}/{from}"
+@page "/carrinhopage/{idcliente:int}/{idfeira:int}/{idstand:int}/{idsubcat:int}/{from}"
+@page "/carrinhopage/{idcliente:int}/{idfeira:int}/{idstand:int}/{idsubcat:int}/{idproduto:int}/{from}"
+@page "/carrinhopage/{idcliente:int}/{idfeira:int}/{idproduto:int}/{from}/{search}"
+@page "/carrinhopage/{idcliente:int}/{idfeira:int}/{from}/{search}"
+
+@using BeFeira.Shared
+@inject IClienteService ClientService
+@inject ICarrinhoProdService CarrinhoProdService
+@inject ICarrinhoService CarrinhoService
+@inject NavigationManager NavigationManager
+
+<header>
+    <link rel="stylesheet" href="icons/icons/css/all.css">
+    <link rel="stylesheet" href="css/mainpage.css">
+
+    <img src="logo.png" @onclick="(()=>gomain())" alt="BeFeira Logo">
+    <button class="u"><i class="fa-solid fa-circle-user" @onclick="(()=>gouser())" alt=""></i></button>
+</header>
+
+<body>
+    <div class="carrinho_container">
+        <h3>Carrinho do cliente @uname </h3>
+        <div class="produto_carrinho produto_carrinho_title">
+            <p>Nome do produto</p>
+            <p>Preço</p>
+            <p>Promoção</p>
+            <p>Quantidade</p>
+            <p>Rating</p>
+            <p>Remover</p>
+        </div>
+        <div class="produtos_carrinho">
+            @{
+                Boolean even = false; 
+                foreach(var produto in produtos)
+                {
+
+                    even = !even;
+                    
+                    <div class="produto_carrinho @String.Format("{0}", even ? "even" : "odd")">
+                        <p>@produto.Nome_Produto</p>
+                        <p>@String.Format("{0}€",produto.Preco.ToString("0.00"))</p>
+                        <p>@String.Format("{0}%", produto.Promocao)</p>
+                        <p>@String.Format("{0} uni.", 1) </p>
+                        <p>@String.Format("{0}", produto.Rating)<i class="fa-solid fa-star"></i></p>
+                        <button><i class="fa-sharp fa-solid fa-square-xmark" @onclick="(()=>RemoveFromKart(produto))"></i></button>
+                    </div>
+                }
+            }
+        </div>
+        <p>@String.Format("Total: {0}€",kart.Total.ToString("0.00"))</p>
+        <div class="carrinho_buttons_container">
+            <button @onclick="(()=>goBack())">Voltar</button>
+            <button @onclick="(()=>FinalizarCompra())" >Finalizar compra</button>
+        </div>
+    </div>
+</body>
+
+
+@code {
+
+    [Parameter]
+    public int? idfeira { get; set; }
+
+    [Parameter]
+    public int? idstand { get; set; }
+
+    [Parameter]
+    public int? idsubcat { get; set; }
+
+    [Parameter]
+    public int? idproduto { get; set; }
+
+    [Parameter]
+    public int? idcliente { get; set; }
+
+    [Parameter]
+    public string? from { get; set; }
+
+    [Parameter]
+    public string? search { get; set; }
+
+    private Carrinho kart = new Carrinho { };
+    public  List<Produto> produtos = new List<Produto>();
+    public List<CarrinhoProduto> carsprods = new List<CarrinhoProduto>();
+
+
+    public string? uname;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (idcliente == -1)
+        {
+            uname = "Guest";
+        }
+        else
+        {
+            //ver se o gajo tem carro , senao cria-se
+            Cliente cli = await ClientService.GetSingleCliente((int)idcliente);
+            uname = cli.Username;
+            int k = await CarrinhoService.ExistsCarrinho(cli.ID);
+            if (k < 0)
+            {
+                await CarrinhoService.AddCarrinho(new Carrinho { ClienteID = cli.ID, Total = 0 });
+                kart = await CarrinhoService.getCarrinhobyIdCliente((int)idcliente);
+            }
+            else
+            {
+
+                float a = await CarrinhoProdService.getPrecoKart(k);
+                kart = await CarrinhoService.getCarrinhobyIdCliente((int)idcliente);
+                kart.Total = (Decimal)a;
+                await (CarrinhoService.UpdateCarrinho(kart));
+
+            }
+            carsprods = await CarrinhoProdService.getCarrinhosProdbyIdKart((int)kart.ID);
+            produtos = await CarrinhoProdService.getProdutosinCarrinho((int)kart.ID);
+
+        }
+    }
+   
+
+
+    async void RemoveFromKart(Produto produto)
+    {
+
+
+        int p = await CarrinhoProdService.getCarrinhoprodbykartandprod(produto, kart.ID);
+        await  CarrinhoProdService.DeleteCarrinhoProd(p);
+
+
+        NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
+
+    }
+
+    void FinalizarCompra()
+    {
+        if (idcliente>0)
+        NavigationManager.NavigateTo($"/finalizarcompra/{kart.ID}/{idcliente}");
+
+
+    }
+
+    void gomain()
+    {
+        NavigationManager.NavigateTo($"mainpage/{idcliente}");
+    }
+
+    void goBack()
+    {
+        if (from.Equals("mainpage")) NavigationManager.NavigateTo($"mainpage/{idcliente}");
+        if (from.Equals("feirapage")) NavigationManager.NavigateTo($"feirapage/{idfeira}/{idcliente}");
+        if (from.Equals("standpage")) NavigationManager.NavigateTo($"standpage/{idfeira}/{idstand}/{idcliente}");
+        if (from.Equals("produtopage")) NavigationManager.NavigateTo($"produtopage/{idsubcat}/{idstand}/{idfeira}/{idcliente}");
+        if (from.Equals("produtoinfo")) NavigationManager.NavigateTo($"produtoinfo/{idproduto}/{idsubcat}/{idstand}/{idfeira}/1/{idcliente}");
+        if (from.Equals("produtoinfo2")) NavigationManager.NavigateTo($"produtoinfo/{idproduto}/{idfeira}/{idcliente}/{search}");
+        if (from.Equals("produtopage2")) NavigationManager.NavigateTo($"produtopage2/{idfeira}/{idcliente}/{search}");
+
+    }
+
+    void gouser()
+    {
+        NavigationManager.NavigateTo($"userinfo/{idcliente}");
+    }
+}

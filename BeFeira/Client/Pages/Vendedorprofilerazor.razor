@@ -1,0 +1,171 @@
+﻿@page "/vendedorprofile"
+@page "/vendedorprofile/{idVend:int}"
+
+@inject NavigationManager NavigationManager
+@inject IVendedorService VendedorService
+@inject IVendaService VendaService
+
+
+<header>
+    <link rel="stylesheet" href="icons/icons/css/all.css">
+    <link rel="stylesheet" href="css/mainpage.css">
+
+    <img src="logo.png" alt="BeFeira Logo" @onclick="(()=>gomain())">
+    <i class="fa-solid fa-circle-user"></i>
+</header>
+
+<div class="client_container">
+
+ 
+    <div class="client_left">
+
+        <div style="display: flex;margin-top: 35px;">
+            <p><i class="fas fa-user"></i>@String.Format("Username: {0}", vend.Username)</p>
+        </div>
+
+        <div style="display: flex">
+            <p><i class="fas fa-envelope"></i>@String.Format("E-mail: {0}", vend.Email)</p>
+        </div>
+
+        <div style="display: flex">
+            <p><i class="fa-solid fa-phone"></i> @vend.Mbway</p>
+        </div>
+
+        <div style="display: flex">
+            <p><i class="fa fa-bank"></i> @vend.Iban</p>
+        </div>
+  
+
+        <div style="display: flex">
+            @switch (vend.Rating)
+            {
+                case 0:
+                    <i class="fa-regular fa-star"></i>
+                    <i class="fa-regular fa-star"></i>
+                    <i class="fa-regular fa-star"></i>
+                    <i class="fa-regular fa-star"></i>
+                    <i class="fa-regular fa-star"></i>
+                    break;
+
+                case 1:
+                    <i class="fa-regular fa-star-half-stroke"></i>
+                    <i class="fa-regular fa-star"></i>
+                    <i class="fa-regular fa-star"></i>
+                    <i class="fa-regular fa-star"></i>
+                    <i class="fa-regular fa-star"></i>
+                    break;
+                case 2:
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-regular fa-star"></i>
+                    <i class="fa-regular fa-star"></i>
+                    <i class="fa-regular fa-star"></i>
+                    <i class="fa-regular fa-star"></i>
+                    break;
+                case 3:
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-regular fa-star-half-stroke"></i>
+                    <i class="fa-regular fa-star"></i>
+                    <i class="fa-regular fa-star"></i>
+                    <i class="fa-regular fa-star"></i>
+                    break;
+                case 4:
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-regular fa-star"></i>
+                    <i class="fa-regular fa-star"></i>
+                    <i class="fa-regular fa-star"></i>
+                    break;
+                case 5:
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-regular fa-star-half-stroke"></i>
+                    <i class="fa-regular fa-star"></i>
+                    <i class="fa-regular fa-star"></i>
+                    break;
+                case 6:
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-regular fa-star"></i>
+                    <i class="fa-regular fa-star"></i>
+                    break;
+                case 7:
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-regular fa-star-half-stroke"></i>
+                    <i class="fa-regular fa-star"></i>
+                    break;
+                case 8:
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-regular fa-star"></i>
+                    break;
+                case 9:
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-regular fa-star-half-stroke"></i>
+                    break;
+                case 10:
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    break;
+
+
+            }
+        </div>
+
+        <button class="log_off"><i class="fa-solid fa-right-from-bracket" @onclick="(()=>gologin())" alt=""></i></button>
+    </div>
+
+    <div class="client_right">
+
+        <img src="@vend.UrlImage" alt="Imagem de perfil Vendedor">
+    </div>
+
+</div>
+
+<button class="log_off"><i class="fa-solid fa-right-from-bracket" @onclick="(()=>gologin())" alt=""></i></button>
+
+
+
+@code {
+
+    [Parameter]
+    public int? idVend { get; set; }
+    private Vendedor vend = new Vendedor { };
+    int totalprofit = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await VendaService.GetVendas();
+        
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+
+        vend = await VendedorService.GetSingleVendedor((int)idVend);
+
+    }
+
+    public void gologin()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+
+
+    void gomain()
+    {
+        NavigationManager.NavigateTo($"vendedormain/{idVend}");
+    }
+
+
+}

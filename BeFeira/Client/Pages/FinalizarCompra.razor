@@ -1,0 +1,153 @@
+﻿@page "/finalizarcompra"
+@page "/finalizarcompra/{idkart:int}/{idcli:int}"
+
+@inject IVendaService VendaService
+@inject IVendaProdService VendaProdService
+@inject IClienteService ClientService
+@inject ICarrinhoService CarrinhoService
+@inject IProdutoService ProdutoService
+@inject ICarrinhoProdService CarrinhoProdService
+
+
+@inject NavigationManager NavigationManager
+
+<header>
+    <link rel="stylesheet" href="icons/icons/css/all.css">
+    <link rel="stylesheet" href="css/Login.css">
+    <img src="logo.png" @onclick="(()=>gomain())" alt="BeFeira Logo">
+    <button class="u"><i class="fa-solid fa-circle-user" @onclick="(()=>gouser())" alt=""></i></button>
+</header>
+
+<body>
+    <div class="container">
+        <div class="forms">
+            <EditForm Model="@c">
+            <div class="form-content" style="justify-content: center">
+                <div class="login-form">
+                    <div>Realizar pagamento</div>
+                        <div class="input-boxes">
+                            <div class="input-box">
+                                <i class="fa-solid fa-money-bill-transfer"></i><input type="text" placeholder="MBWay ou Iban" @bind-value=c.Pagamento required>
+                            </div>
+                            <div class="input-box">
+                                <i class="fa-solid fa-house"></i> <input type="text" placeholder="Morada" @bind-value=c.Morada required>
+                            </div>
+            
+                            <div class="button input-box">
+                                <input type="submit"@onclick="compra" value="Comprar">
+                            </div>
+                           
+                        </div>
+                        <div class="Total">
+                            <p><i class="fa-solid fa-barcode"></i> @kart.Total €</p>
+                        </div>
+                </div>
+            </div>
+            </EditForm>
+        </div>
+    </div>
+</body>
+
+@code {
+    [Parameter]
+    public int? idcli { get; set; }
+
+    [Parameter]
+    public int? idkart { get; set; }
+
+    [Parameter]
+    public string? uname { get; set; }
+
+    private Venda c = new Venda { };
+
+    private Carrinho kart = new Carrinho{ };
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await VendaProdService.GetVendaProdutos();
+        await CarrinhoService.getCarrinhos();
+        await CarrinhoProdService.getCarrinhosProd();
+        if (idcli == -1)
+        {
+            uname = "Guest";
+        }
+        else
+        {
+
+            Cliente cli = await ClientService.GetSingleCliente((int)idcli);
+            uname = cli.Username;
+
+        }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (idkart == null)
+        {
+
+        }
+        else
+        {
+            kart = await CarrinhoService.GetsingleCarrinho((int)idkart);
+
+        }
+    }
+
+
+
+
+    public async void compra()
+    {
+
+        if (idcli != -1 && c.Pagamento!=0 && c.Morada!=null)
+        {
+
+            List<Produto> prod = new List<Produto>();
+            prod = await CarrinhoProdService.getProdutosinCarrinho((int)idkart);
+            if (prod.Any(h => h.Stock < 1))
+            {
+
+                NavigationManager.NavigateTo("/");
+            }
+            else
+            {
+
+        c.Total = await CarrinhoProdService.getPrecoKart((int)idkart);
+        c.CarrinhoID = idkart;
+        Cliente cli = new Cliente();
+        cli = await ClientService.GetSingleCliente((int)idcli);
+        cli.Total += c.Total;
+        await ClientService.UpdateCliente(cli);
+
+                await VendaService.AddVenda(c);
+                await CarrinhoProdService.deleteprodutoskart((int)idkart);
+
+
+
+                foreach (var produto in prod)
+                {
+                    VendaProduto vp = new VendaProduto { VendaID = 1, ProdutoID = produto.ID, Quantidade = 1, Preco = produto.Preco, TaxaBefeira = 10 };
+                    await VendaProdService.AddVendaProduto(vp);
+                    Produto p = new Produto { StandID = produto.StandID, ID = produto.ID, Nome_Produto = produto.Nome_Produto, Preco = produto.Preco, Promocao = produto.Promocao, Stock = produto.Stock - 1, Rating = produto.Rating, UrlImage = produto.UrlImage, SubCategoriaID = produto.SubCategoriaID };
+                    await ProdutoService.UpdateProduto(p);
+                }
+
+
+                NavigationManager.NavigateTo($"/mainpage/{idcli}");
+            }
+        }
+    }
+
+    void gouser()
+    {
+        NavigationManager.NavigateTo($"userinfo/{idcli}");
+    }
+
+    void gomain()
+    {
+        NavigationManager.NavigateTo($"mainpage/{idcli}");
+    }
+
+}
