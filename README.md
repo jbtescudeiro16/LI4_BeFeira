@@ -14,3 +14,10 @@ Ao entrar, aparece a página de feiras onde cada feira corresponde a uma categor
 Clicando numa feira são apresentados os stands existentes nesta feira.Neste Caso,clicando na feira de Moda, aparecem os seguintes Stands:
 
 ![alt text](https://github.com/jbtescudeiro16/LI4_BeFeira/blob/main/Screens/Imagem4.png?raw=true)
+
+Após selecionar um stand aparecem as categorias e os produtos disponíveis no mesmo:
+![alt text](https://github.com/jbtescudeiro16/LI4_BeFeira/blob/main/Screens/Imagem3.png?raw=true)
+![alt text](https://github.com/jbtescudeiro16/LI4_BeFeira/blob/main/Screens/Imagem6.png?raw=true)
+
+É também possível observar as caracteristicas de um produto selecionando o mesmo:
+![alt text](https://github.com/jbtescudeiro16/LI4_BeFeira/blob/main/Screens/Imagem5.png?raw=true)
