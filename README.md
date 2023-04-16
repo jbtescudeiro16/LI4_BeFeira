@@ -21,3 +21,8 @@ Após selecionar um stand aparecem as categorias e os produtos disponíveis no m
 
 É também possível observar as caracteristicas de um produto selecionando o mesmo:
 ![alt text](https://github.com/jbtescudeiro16/LI4_BeFeira/blob/main/Screens/Imagem5.png?raw=true)
+
+A qualquer altura é possível selecionar o perfil que indica o nome e os dados pessoais,bem como o dinheiro total gasto na app:
+![alt text](https://github.com/jbtescudeiro16/LI4_BeFeira/blob/main/Screens/Imagem7.png?raw=true)
+Ao clicar em comprar produto este vai para o carrinho, que posteriormente ao finalizar compra será removida uma unidade do stock:
+![alt text](https://github.com/jbtescudeiro16/LI4_BeFeira/blob/main/Screens/Imagem8.png?raw=true)
