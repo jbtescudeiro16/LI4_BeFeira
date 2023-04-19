@@ -3,6 +3,12 @@
 Este projeto consiste na criação de uma aplicação Web utilizando C# e frameworks de .NET .
 A aplicaçãio consiste num gestor de feiras em que os vendedores conseguem adiconar/remover produtos e feiras e os comerciantes comprar produtos adicionando-os ao carrinho e finalizando uma compra.
 
+A aplicação foi realizada utilizando a ferrmenta Visual Studio  2022 da Microsoft , e Microsoft SQL Studio para persitência de dados.
+
+Um dos maiores desafios desta aplicação foi o facto de o grupo ter de trabalhar como uma equipa, em que cada um dos elemento stinha um papel diferente mas de uma forma igualmente importante. Havia pessoas para realização das páginas utilizando Razor, pessoas a tratar da base de dados e pessoas para o backend.
+
+O produto final foi bastante agradável visto que conseguimos na íntegra concretizar os objetivos aos quais nos propusemos nas fases anteriores(requisitos,especificação,modelação e modelos da base de dados), no entanto haveria aspetos a melhorar como a inclusão de uma página para atribuição de ranking à compra e uma página na qual o vendededor conseguisse gerir os seus stands todos, sem ter de procurar um a um.
+
 
 ![alt text](https://github.com/jbtescudeiro16/LI4_BeFeira/blob/main/Screens/Imagem1.png?raw=true)
 
